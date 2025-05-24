@@ -72,7 +72,7 @@ const DateSerializerPlugin: SerializerPluginType<Date> = {
   // Filter: Check if the target is a Date
   filter: (target) => target instanceof Date,
   // Unique type identifier
-  targetTypeString: "Date",
+  targetType: new TextEncoder().encode("Date"),
   // Serialize Date to a timestamp (8-byte float)
   serialize: ({ target }) => {
     const timestamp = target.getTime();
@@ -93,7 +93,7 @@ import { u8iToNumber } from "../utils/number_u8i_converter";
 
 const DateDeserializerPlugin: DeserializerPluginType<Date> = {
   // Filter: Check if the value type is "Date"
-  filter: (valueType) => valueType === "Date",
+  filter: new TextEncoder().encode("Date"),
   // Deserialize Uint8Array to Date
   deserialize: ({ targetArray }) => {
     const timestamp = u8iToNumber(targetArray); // Convert Uint8Array to number
