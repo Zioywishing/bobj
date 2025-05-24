@@ -17,7 +17,7 @@ class Deserializer {
         const result: { [key: string]: any } = {}
         let p = 0;
         while (p < targetArray.length) {
-            const targetArraySlice = targetArray.slice(p);
+            const targetArraySlice = targetArray.subarray(p);
             const bobjItem = decodeBobjItem({ targetArray: targetArraySlice, textDecoder: this.#textDecoder });
             for (const plugin of this.#pluginArray) {
                 if (plugin.filter(bobjItem.valueType)) {
