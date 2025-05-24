@@ -28,10 +28,10 @@ class Serializer {
         }
     }
 
-    async filter(targetObject: any): Promise<string | undefined> {
+    async filter(targetObject: any): Promise<Uint8Array | undefined> {
         for (const plugin of this.#PluginArray) {
             if (plugin.filter(targetObject)) {
-                return plugin.targetTypeString;
+                return plugin.targetType;
             }
         }
     }

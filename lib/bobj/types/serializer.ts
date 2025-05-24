@@ -6,5 +6,5 @@ export type SerializerPluginType<T> = {
         serializer: Serializer,
     }): Uint8Array | Promise<Uint8Array>;
     filter: (targetObject: any) => boolean;
-    targetTypeString: string;
+    targetType: Uint8Array;
 }

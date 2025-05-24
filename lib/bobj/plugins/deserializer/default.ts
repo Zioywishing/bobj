@@ -1,15 +1,18 @@
 import type { DeserializerPluginType } from "../../types/deserializer";
+import compareU8iArr from "../../utils/compareU8iArr";
 import { u8iToNumber } from "../../utils/number_u8i_converter";
 
 const defaultDeserializerPluginGroup: DeserializerPluginType<any>[] = [
     {
-        filter: (valueType) => valueType === "Object",
+        // object
+        filter: (valueType) => compareU8iArr(valueType, new Uint8Array([0])) === 0,
         deserialize: (props) => {
             return props.deserializer.deserialize(props.targetArray);
         }
     },
     {
-        filter: (valueType) => valueType === "Array",
+        // array 
+        filter: (valueType) => compareU8iArr(valueType, new Uint8Array([1])) === 0,
         deserialize: async (props) => {
             const values = (await props.deserializer.deserialize(props.targetArray))!;
             const result = new Array(values.l).fill(0);
@@ -19,38 +22,35 @@ const defaultDeserializerPluginGroup: DeserializerPluginType<any>[] = [
             return result;
         }
     }, {
-        filter: (valueType) => valueType === "Uint8Array",
+        filter: (valueType) => compareU8iArr(valueType, new Uint8Array([2])) === 0,
         deserialize: (props) => {
             return props.targetArray;
         }
     },
     {
-        filter: (valueType) => valueType === "String",
+        filter: (valueType) => compareU8iArr(valueType, new Uint8Array([3])) === 0,
         deserialize: (props) => {
-            const textDecoder = new TextDecoder();
-            return textDecoder.decode(props.targetArray);
+            return (new TextDecoder()).decode(props.targetArray);
         },
     }, {
-        filter: (valueType) => valueType === "Number",
+        filter: (valueType) => compareU8iArr(valueType, new Uint8Array([4])) === 0,
         deserialize: (props) => {
-            const res = u8iToNumber(props.targetArray)
-            return res
+            return u8iToNumber(props.targetArray)
         }
     }, {
-        filter: (valueType) => valueType === "Boolean",
+        filter: (valueType) => compareU8iArr(valueType, new Uint8Array([5])) === 0,
         deserialize: (props) => {
-            const res = props.targetArray[0] === 0x01 ? true : false;
-            return res;
+            return props.targetArray[0] === 0x01;
         }
     }, {
-        filter: (valueType) => valueType === "Null",
-        deserialize: (_) => {
-            return null;
-        }
-    }, {
-        filter: (valueType) => valueType === "Undefined",
+        filter: (valueType) => compareU8iArr(valueType, new Uint8Array([6])) === 0,
         deserialize: (_) => {
             return undefined;
+        }
+    }, {
+        filter: (valueType) => compareU8iArr(valueType, new Uint8Array([7])) === 0,
+        deserialize: (_) => {
+            return null;
         }
     }
 ];

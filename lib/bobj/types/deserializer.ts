@@ -5,5 +5,5 @@ export type DeserializerPluginType<T> = {
         targetArray: Uint8Array,
         deserializer: Deserializer
     }): T | Promise<T>;
-    filter: (valueType: string) => boolean;
+    filter: (valueType: Uint8Array) => boolean;
 }
