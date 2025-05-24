@@ -9,13 +9,13 @@ export default defineConfig({
     build: {
         lib: {
             entry: resolve(__dirname, './lib/bobj/index.ts'),
-            name: 'Bobj',
+            name: 'bobj',
             fileName: 'bobj',
         },
         rollupOptions: {
             output: {
                 globals: {
-                    liteMove: 'Bobj',
+                    bobj: 'bobj',
                 },
             },
         },
