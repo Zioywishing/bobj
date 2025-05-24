@@ -121,9 +121,9 @@ const deserializer = new Deserializer();
 deserializer.registerPlugin(DateDeserializerPlugin);
 
 // Test with a Date object
-const testDate = new Date("2024-01-01");
+const testDate = {date: new Date("2024-01-01")};
 const dateBinary = await serializer.serialize(testDate); // Uint8Array([...timestamp bytes...])
-const restoredDate = await deserializer.deserialize(dateBinary); // Date("2024-01-01")
+const restoredDate = await deserializer.deserialize(dateBinary); // { date: Date("2024-01-01") }
 ```
 
 
