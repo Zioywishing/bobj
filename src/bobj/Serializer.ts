@@ -1,11 +1,11 @@
-import type { BinarizerPluginType } from "./types/binarizer";
-import defaultBinarizerPluginGroup from "./plugins/binarizer/default";
+import type { SerializerPluginType } from "./types/serializer";
+import defaultSerializerPluginGroup from "./plugins/serializer/default";
 
-class Binarizer {
-    #PluginArray: BinarizerPluginType<any>[] = [];
+class Serializer {
+    #PluginArray: SerializerPluginType<any>[] = [];
 
     constructor() {
-        defaultBinarizerPluginGroup.forEach((plugin) => {
+        defaultSerializerPluginGroup.forEach((plugin) => {
             this.registerPlugin(plugin);
         })
     }
@@ -15,7 +15,7 @@ class Binarizer {
             if (plugin.filter(targetObject)) {
                 const bRes = plugin.binarize({
                     target: targetObject,
-                    binarizer: this,
+                    serializer: this,
                 })
                 let res: Uint8Array | undefined;
                 if (bRes instanceof Promise) {
@@ -36,9 +36,9 @@ class Binarizer {
         }
     }
 
-    registerPlugin(middleware: BinarizerPluginType<any>) {
+    registerPlugin(middleware: SerializerPluginType<any>) {
         this.#PluginArray.unshift(middleware);
     }
 }
 
-export default Binarizer;  
+export default Serializer;  

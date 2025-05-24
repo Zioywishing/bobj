@@ -1,9 +1,9 @@
-import type Debinarizer from "../Debinarizer";
+import type Deserializer from "../Deserializer";
 
-export type DebinarizerPluginType<T> = {
+export type DeserializerPluginType<T> = {
     debinarize(props: {
         targetArray: Uint8Array,
-        debinarizer: Debinarizer
+        deserializer: Deserializer
     }): T | Promise<T>;
     filter: (valueType: string) => boolean;
 }

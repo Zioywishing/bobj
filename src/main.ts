@@ -1,5 +1,5 @@
-import Debinarizer from "./bobj/Debinarizer";
-import { Binarizer } from "./bobj/index";
+import Deserializer from "./bobj/Deserializer";
+import { Serializer } from "./bobj/index";
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
   <div>
@@ -10,7 +10,9 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
 async function test() {
   
-  const binarizer = new Binarizer();
+  const serializer = new Serializer();
+
+  const deserializer = new Deserializer();
 
   const obj = {
     a: 1,
@@ -23,12 +25,11 @@ async function test() {
     }, false, [1, 2, undefined, null, 5, "6", new Uint8Array([7, 8, 9])]]
   }
 
-  const uint8array = (await binarizer.binarize(obj))!;
+  const uint8array = (await serializer.binarize(obj))!;
+
   console.log(uint8array);
 
-  const debinarizer = new Debinarizer();
-
-  const res = await debinarizer.debinarize(uint8array);
+  const res = await deserializer.debinarize(uint8array);
 
   console.log(res);
 }

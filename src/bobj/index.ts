@@ -1,7 +1,7 @@
-import Binarizer from "./Binarizer";
-import Debinarizer from "./Debinarizer";
+import Serializer from "./Serializer";
+import Deserializer from "./Deserializer";
 
 export {
-    Binarizer,
-    Debinarizer,
+    Serializer,
+    Deserializer,
 };

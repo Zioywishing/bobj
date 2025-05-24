@@ -1,14 +1,14 @@
-import defaultDebinarizerPluginGroup from "./plugins/debinarizer/default";
-import type { DebinarizerPluginType } from "./types/debinarizer";
+import defaultDeserializerPluginGroup from "./plugins/deserializer/default";
+import type { DeserializerPluginType } from "./types/deserializer";
 import decodeBobjItem from "./utils/decodeBobjItem";
 
 
-class Debinarizer {
-    #pluginArray: DebinarizerPluginType<any>[] = [];
+class Deserializer {
+    #pluginArray: DeserializerPluginType<any>[] = [];
     #textDecoder: TextDecoder = new TextDecoder();
 
     constructor() {
-        defaultDebinarizerPluginGroup.forEach(plugin => {
+        defaultDeserializerPluginGroup.forEach(plugin => {
             this.registerPlugin(plugin);
         })
      }
@@ -21,7 +21,7 @@ class Debinarizer {
             const bobjItem = decodeBobjItem({ targetArray: targetArraySlice, textDecoder: this.#textDecoder });
             for (const plugin of this.#pluginArray) {
                 if (plugin.filter(bobjItem.valueType)) {
-                    const valueObj = plugin.debinarize({ targetArray: bobjItem.value, debinarizer: this });
+                    const valueObj = plugin.debinarize({ targetArray: bobjItem.value, deserializer: this });
                     if (valueObj instanceof Promise) {
                         result[bobjItem.key] = await valueObj; 
                     } else {
@@ -34,9 +34,9 @@ class Debinarizer {
         return result;
     }
 
-    registerPlugin<T>(plugin: DebinarizerPluginType<T>) {
+    registerPlugin<T>(plugin: DeserializerPluginType<T>) {
         this.#pluginArray.unshift(plugin); 
     }
 }
 
-export default Debinarizer;
+export default Deserializer;

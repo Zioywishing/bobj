@@ -1,17 +1,17 @@
-import type { DebinarizerPluginType } from "../../types/debinarizer";
+import type { DeserializerPluginType } from "../../types/deserializer";
 import { u8iToNumber } from "../../utils/number_u8i_converter";
 
-const defaultDebinarizerPluginGroup: DebinarizerPluginType<any>[] = [
+const defaultDeserializerPluginGroup: DeserializerPluginType<any>[] = [
     {
         filter: (valueType) => valueType === "Object",
         debinarize: (props) => {
-            return props.debinarizer.debinarize(props.targetArray);
+            return props.deserializer.debinarize(props.targetArray);
         }
     },
     {
         filter: (valueType) => valueType === "Array",
         debinarize: async (props) => {
-            const values = (await props.debinarizer.debinarize(props.targetArray))!;
+            const values = (await props.deserializer.debinarize(props.targetArray))!;
             const result = new Array(values.l).fill(0);
             for (let i = 0; i < values.l; i++) {
                 result[i] = values[i]; 
@@ -55,4 +55,4 @@ const defaultDebinarizerPluginGroup: DebinarizerPluginType<any>[] = [
     }
 ];
 
-export default defaultDebinarizerPluginGroup;
+export default defaultDeserializerPluginGroup;

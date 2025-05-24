@@ -1,9 +1,9 @@
-import type Binarizer from "../Binarizer";
+import type Serializer from "../Serializer";
 
-export type BinarizerPluginType<T> = {
+export type SerializerPluginType<T> = {
     binarize(props: {
         target: T,
-        binarizer: Binarizer,
+        serializer: Serializer,
     }): Uint8Array | Promise<Uint8Array>;
     filter: (targetObject: any) => boolean;
     targetTypeString: string;

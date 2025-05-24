@@ -1,9 +1,9 @@
-import type Binarizer from "../../Binarizer";
-import type { BinarizerPluginType } from "../../types/binarizer";
+import type Serializer from "../../Serializer";
+import type { SerializerPluginType } from "../../types/serializer";
 import buildBobjEl from "../../utils/buildBobjEl";
 import { numberToU8i } from "../../utils/number_u8i_converter";
 
-const defaultBinarizerPluginGroup: BinarizerPluginType<any>[] = [
+const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
     {
         filter: (_targetObject: any) => {
             return true
@@ -11,14 +11,14 @@ const defaultBinarizerPluginGroup: BinarizerPluginType<any>[] = [
         targetTypeString: "Object",
         async binarize(props: {
             target: { [x: string]: any; },
-            binarizer: Binarizer,
+            serializer: Serializer,
         }) {
             const stringEncoder = new TextEncoder();
             let result = new Uint8Array(0);
             for (const key in props.target) {
                 const value = props.target[key];
-                const valueType = await props.binarizer.filter(value) || "Unknown";
-                const valueBytes = valueType !== "unknown" ? await props.binarizer.binarize(value) || new Uint8Array(0) : new Uint8Array(0);
+                const valueType = await props.serializer.filter(value) || "Unknown";
+                const valueBytes = valueType !== "unknown" ? await props.serializer.binarize(value) || new Uint8Array(0) : new Uint8Array(0);
                 result = new Uint8Array([...result, ...buildBobjEl({ key, valueType, value: valueBytes, textEncoder: stringEncoder })]);
             }
             return result;
@@ -28,7 +28,7 @@ const defaultBinarizerPluginGroup: BinarizerPluginType<any>[] = [
             return targetObject instanceof Array;
         },
         targetTypeString: "Array",
-        async binarize(props: { target: any[]; binarizer: Binarizer; }) {
+        async binarize(props: { target: any[]; serializer: Serializer; }) {
             const stringEncoder = new TextEncoder();
             let result = new Uint8Array(0);
             const newTarget: { [key: string]: any } = {
@@ -37,8 +37,8 @@ const defaultBinarizerPluginGroup: BinarizerPluginType<any>[] = [
             }
             for (const key in newTarget) {
                 const value = newTarget[key];
-                const valueType = await props.binarizer.filter(value) || "Unknown";
-                const valueBytes = valueType !== "unknown" ? await props.binarizer.binarize(value) || new Uint8Array(0) : new Uint8Array(0);
+                const valueType = await props.serializer.filter(value) || "Unknown";
+                const valueBytes = valueType !== "unknown" ? await props.serializer.binarize(value) || new Uint8Array(0) : new Uint8Array(0);
                 result = new Uint8Array([...result, ...buildBobjEl({ key, valueType, value: valueBytes, textEncoder: stringEncoder })]);
             }
             return result;
@@ -48,7 +48,7 @@ const defaultBinarizerPluginGroup: BinarizerPluginType<any>[] = [
             return targetObject instanceof Uint8Array;
         },
         targetTypeString: "Uint8Array",
-        binarize(props: { target: Uint8Array; binarizer: Binarizer; }) {
+        binarize(props: { target: Uint8Array; serializer: Serializer; }) {
             return props.target;
         }
     }, {
@@ -95,4 +95,4 @@ const defaultBinarizerPluginGroup: BinarizerPluginType<any>[] = [
     }
 ]
 
-export default defaultBinarizerPluginGroup;
+export default defaultSerializerPluginGroup;
