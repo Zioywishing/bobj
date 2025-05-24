@@ -1,11 +1,10 @@
 {
   "name": "bobj",
-  "private": true,
   "version": "1.0.0",
   "type": "module",
   "main": "dist/bobj.umd.cjs",
   "module": "dist/bobj.js",
-  "typings": "dist/lib/bobj/index.d.ts",
+  "typings": "dist/index.d.ts",
   "files": [
     "dist"
   ],
