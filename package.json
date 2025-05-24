@@ -1,8 +1,17 @@
 {
   "name": "bobj",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
+  "main": "dist/bobj.umd.js",
+  "module": "dist/bobj.mjs",
+  "typings": "dist/lib/bobj/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "license": "MIT",
+  "author": "MiaoSpring",
+  "description": "A JavaScript library for serializer object.",
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
@@ -10,8 +19,10 @@
   },
   "devDependencies": {
     "typescript": "~5.8.3",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vite-plugin-dts": "^4.5.4"
   },
   "dependencies": {
+    "@types/node": "^22.15.21"
   }
 }
