@@ -10,10 +10,10 @@ class Serializer {
         })
     }
 
-    async binarize(targetObject: { [key: string]: any }): Promise<Uint8Array | undefined> {
+    async serialize(targetObject: { [key: string]: any }): Promise<Uint8Array | undefined> {
         for (const plugin of this.#PluginArray) {
             if (plugin.filter(targetObject)) {
-                const bRes = plugin.binarize({
+                const bRes = plugin.serialize({
                     target: targetObject,
                     serializer: this,
                 })

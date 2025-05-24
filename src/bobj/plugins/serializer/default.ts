@@ -9,7 +9,7 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             return true
         },
         targetTypeString: "Object",
-        async binarize(props: {
+        async serialize(props: {
             target: { [x: string]: any; },
             serializer: Serializer,
         }) {
@@ -18,7 +18,7 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             for (const key in props.target) {
                 const value = props.target[key];
                 const valueType = await props.serializer.filter(value) || "Unknown";
-                const valueBytes = valueType !== "unknown" ? await props.serializer.binarize(value) || new Uint8Array(0) : new Uint8Array(0);
+                const valueBytes = valueType !== "unknown" ? await props.serializer.serialize(value) || new Uint8Array(0) : new Uint8Array(0);
                 result = new Uint8Array([...result, ...buildBobjEl({ key, valueType, value: valueBytes, textEncoder: stringEncoder })]);
             }
             return result;
@@ -28,7 +28,7 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             return targetObject instanceof Array;
         },
         targetTypeString: "Array",
-        async binarize(props: { target: any[]; serializer: Serializer; }) {
+        async serialize(props: { target: any[]; serializer: Serializer; }) {
             const stringEncoder = new TextEncoder();
             let result = new Uint8Array(0);
             const newTarget: { [key: string]: any } = {
@@ -38,7 +38,7 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             for (const key in newTarget) {
                 const value = newTarget[key];
                 const valueType = await props.serializer.filter(value) || "Unknown";
-                const valueBytes = valueType !== "unknown" ? await props.serializer.binarize(value) || new Uint8Array(0) : new Uint8Array(0);
+                const valueBytes = valueType !== "unknown" ? await props.serializer.serialize(value) || new Uint8Array(0) : new Uint8Array(0);
                 result = new Uint8Array([...result, ...buildBobjEl({ key, valueType, value: valueBytes, textEncoder: stringEncoder })]);
             }
             return result;
@@ -48,7 +48,7 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             return targetObject instanceof Uint8Array;
         },
         targetTypeString: "Uint8Array",
-        binarize(props: { target: Uint8Array; serializer: Serializer; }) {
+        serialize(props: { target: Uint8Array; serializer: Serializer; }) {
             return props.target;
         }
     }, {
@@ -56,7 +56,7 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             return typeof _ === "string";
         },
         targetTypeString: "String",
-        binarize(props: { target: string; textEncoder?: TextEncoder; }) {
+        serialize(props: { target: string; textEncoder?: TextEncoder; }) {
             const textEncoder = props.textEncoder || new TextEncoder();
             return textEncoder.encode(props.target);
         }
@@ -65,7 +65,7 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             return typeof _ === "number";
         },
         targetTypeString: "Number",
-        binarize(props: { target: number; }) {
+        serialize(props: { target: number; }) {
             return numberToU8i(props.target);
         }
     }, {
@@ -73,7 +73,7 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             return typeof _ === "boolean";
         },
         targetTypeString: "Boolean",
-        binarize(props: { target: boolean; }) {
+        serialize(props: { target: boolean; }) {
             return new Uint8Array([props.target ? 1 : 0]);
         }
     }, {
@@ -81,7 +81,7 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             return typeof _ === "undefined";
         },
         targetTypeString: "Undefined",
-        binarize() {
+        serialize() {
             return new Uint8Array(0);
         }
     }, {
@@ -89,7 +89,7 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             return _ === null;
         },
         targetTypeString: "Null",
-        binarize() {
+        serialize() {
             return new Uint8Array(0);
         }
     }

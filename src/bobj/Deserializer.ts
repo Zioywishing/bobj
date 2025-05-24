@@ -13,7 +13,7 @@ class Deserializer {
         })
      }
 
-    async debinarize(targetArray: Uint8Array): Promise<{ [key: string]: any; } | undefined> {
+    async deserialize(targetArray: Uint8Array): Promise<{ [key: string]: any; } | undefined> {
         const result: { [key: string]: any } = {}
         let p = 0;
         while (p < targetArray.length) {
@@ -21,7 +21,7 @@ class Deserializer {
             const bobjItem = decodeBobjItem({ targetArray: targetArraySlice, textDecoder: this.#textDecoder });
             for (const plugin of this.#pluginArray) {
                 if (plugin.filter(bobjItem.valueType)) {
-                    const valueObj = plugin.debinarize({ targetArray: bobjItem.value, deserializer: this });
+                    const valueObj = plugin.deserialize({ targetArray: bobjItem.value, deserializer: this });
                     if (valueObj instanceof Promise) {
                         result[bobjItem.key] = await valueObj; 
                     } else {

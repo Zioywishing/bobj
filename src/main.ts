@@ -25,11 +25,11 @@ async function test() {
     }, false, [1, 2, undefined, null, 5, "6", new Uint8Array([7, 8, 9])]]
   }
 
-  const uint8array = (await serializer.binarize(obj))!;
+  const uint8array = (await serializer.serialize(obj))!;
 
   console.log(uint8array);
 
-  const res = await deserializer.debinarize(uint8array);
+  const res = await deserializer.deserialize(uint8array);
 
   console.log(res);
 }
