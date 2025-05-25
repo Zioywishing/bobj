@@ -1,8 +1,8 @@
 
-# Bobj - A JavaScript Object Serialization Library  
+# Bobj - A modular JavaScript object serialization library
 
 ## Introduction  
-Bobj is a lightweight, extensible JavaScript library designed to serialize JavaScript objects into a binary format (bobj) and deserialize bobj binary data back into JavaScript objects. It supports built-in data types (objects, arrays, `Uint8Array`, strings, numbers, booleans, `null`, and `undefined`) and provides a plugin system for custom data type handling.  
+Bobj is short for "Binary Object", and it is a lightweight, extensible JavaScript library designed to serialize JavaScript objects into a binary format (bobj) and deserialize bobj binary data back into JavaScript objects. It supports built-in data types (objects, arrays, `Uint8Array`, strings, numbers, booleans, `null`, and `undefined`) and provides a plugin system for custom data type handling.
 
 ### Key Features  
 - **Multi-type Support**: Serializes/deserializes common JavaScript primitives and objects.  
@@ -33,6 +33,13 @@ const exampleObj = {
   tags: ["serialization", "binary"],
   active: true,
   metadata: new Uint8Array([0x01, 0x02, 0x03]),
+  nesting:{
+    name: "Bobj",
+    version: 1.0,
+    tags: ["serialization", "binary"],
+    active: true,
+    metadata: new Uint8Array([0x01, 0x02, 0x03]),
+  }
 };
 
 // Create a serializer instance
