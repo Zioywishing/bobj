@@ -1,4 +1,4 @@
-// import cachedFunction from "./cachedFunction";
+import concatU8iArr from "./concatU8iArr";
 import int2bytes from "./int2bytes";
 
 const buildBobjEl = (props: {
@@ -9,18 +9,12 @@ const buildBobjEl = (props: {
 }): Uint8Array => {
     const { key, valueType, value, textEncoder = new TextEncoder() } = props;
     const keyBytes = textEncoder.encode(key);
-    // const valueTypeBytes = cachedFunction(_ => textEncoder.encode(_))([valueType]);
     const valueLengthBytes = int2bytes(value.length);
-    const result = new Uint8Array([
+    return concatU8iArr(new Uint8Array([
         keyBytes.length,
         valueType.length,
         valueLengthBytes.length,
-        ...keyBytes,
-        ...valueType,
-        ...valueLengthBytes,
-        ...value
-    ]);
-    return result;
+    ]), keyBytes, valueType, valueLengthBytes, value);
 }
 
 
