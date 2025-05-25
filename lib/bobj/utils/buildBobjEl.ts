@@ -1,20 +1,6 @@
 import type { SerializerPluginSerializeResultType } from "../types/serializerPlugin";
+import calcSerializerPluginSerializeResultLength from "./calcSerializerPluginSerializeResultLength";
 import int2bytes from "./int2bytes";
-
-const calcValueLengthCache = new WeakMap<SerializerPluginSerializeResultType, number>()
-
-const calcValueLength = (target: SerializerPluginSerializeResultType): number => {
-    if (target instanceof Uint8Array) {
-        return target.length
-    } else {
-        if(calcValueLengthCache.has(target)) {
-            return calcValueLengthCache.get(target)!
-        }
-        const length = target.reduce((curr, item) => curr + calcValueLength(item), 0)
-        calcValueLengthCache.set(target, length)
-        return length
-    }
-}
 
 const buildBobjEl = (props: {
     key: string,
@@ -24,7 +10,7 @@ const buildBobjEl = (props: {
 }) => {
     const { key, valueType, value, textEncoder = new TextEncoder() } = props;
     const keyBytes = textEncoder.encode(key);
-    const valueLengthBytes = int2bytes(calcValueLength(value));
+    const valueLengthBytes = int2bytes(calcSerializerPluginSerializeResultLength(value));
     return [new Uint8Array([
         keyBytes.length,
         valueType.length,

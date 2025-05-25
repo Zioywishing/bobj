@@ -2,6 +2,7 @@ import type { SerializerPluginType } from "./types/serializerPlugin";
 import defaultSerializerPluginGroup from "./plugins/serializer/default";
 import promiseResult from "./utils/promiseResult";
 import concatU8iArr from "./utils/concatU8iArr";
+import calcSerializerPluginSerializeResultLength from "./utils/calcSerializerPluginSerializeResultLength";
 
 class Serializer {
     #PluginArray: SerializerPluginType<any>[] = [];
@@ -21,8 +22,11 @@ class Serializer {
                 }))
                 return bRes instanceof Uint8Array
                     ? bRes
-                    // @ts-ignore
-                    : concatU8iArr(...(bRes.flat(Infinity) as Uint8Array[]))
+                    : concatU8iArr(
+                        // @ts-ignore
+                        bRes.flat(Infinity) as Uint8Array[],
+                        calcSerializerPluginSerializeResultLength(bRes)
+                    )
             }
         }
     }
