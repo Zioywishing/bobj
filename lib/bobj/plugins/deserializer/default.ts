@@ -23,7 +23,7 @@ const defaultDeserializerPluginGroup: DeserializerPluginType<any>[] = [
     }, {
         filter: new Uint8Array([2]),
         deserialize: (props) => {
-            return props.targetArray;
+            return new Uint8Array(props.targetArray);
         }
     },
     {
