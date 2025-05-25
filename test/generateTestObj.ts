@@ -1,5 +1,5 @@
-export function generateTestObj(layer: number): Object {
-    if (layer === 0) {
+export function generateTestObj_deep(deep: number): Object {
+    if (deep === 0) {
         return {};
     }
     return {
@@ -14,9 +14,15 @@ export function generateTestObj(layer: number): Object {
             c: true,
             d: null,
             e: undefined,
-            f: generateTestObj(layer - 1),
+            f: generateTestObj_deep(deep - 1),
         }],
         g: new Uint8Array(3).fill(1),
-        h: generateTestObj(layer - 1),
+        h: generateTestObj_deep(deep - 1),
+    }
+}
+
+export function generateTestObj_length(size: number, repeat: number): Object {
+    return {
+        a: new Array(repeat).fill(0).map(_=>new Uint8Array(size))
     }
 }
