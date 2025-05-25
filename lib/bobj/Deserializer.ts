@@ -1,5 +1,5 @@
 import defaultDeserializerPluginGroup from "./plugins/deserializer/default";
-import type { DeserializerPluginType } from "./types/deserializer";
+import type { DeserializerPluginType } from "./types/deserializerPlugin";
 import decodeBobjItem from "./utils/decodeBobjItem";
 
 const cm = ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "a", "b", "c", "d", "e", "f"]

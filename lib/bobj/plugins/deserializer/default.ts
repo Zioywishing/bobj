@@ -1,4 +1,4 @@
-import type { DeserializerPluginType } from "../../types/deserializer";
+import type { DeserializerPluginType } from "../../types/deserializerPlugin";
 import { u8iToNumber } from "../../utils/number_u8i_converter";
 
 const defaultDeserializerPluginGroup: DeserializerPluginType<any>[] = [

@@ -1,10 +1,12 @@
 import type Serializer from "../Serializer";
 
+export type SerializerPluginSerializeResultType = Uint8Array | (Uint8Array | SerializerPluginSerializeResultType)[]
+
 export type SerializerPluginType<T> = {
     serialize(props: {
         target: T,
         serializer: Serializer,
-    }): Uint8Array | Promise<Uint8Array>;
+    }): SerializerPluginSerializeResultType | Promise<SerializerPluginSerializeResultType>;
     filter: (targetObject: any) => boolean;
     targetType: Uint8Array;
 }

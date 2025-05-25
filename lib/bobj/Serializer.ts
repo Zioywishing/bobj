@@ -1,5 +1,7 @@
-import type { SerializerPluginType } from "./types/serializer";
+import type { SerializerPluginType } from "./types/serializerPlugin";
 import defaultSerializerPluginGroup from "./plugins/serializer/default";
+import promiseResult from "./utils/promiseResult";
+import concatU8iArr from "./utils/concatU8iArr";
 
 class Serializer {
     #PluginArray: SerializerPluginType<any>[] = [];
@@ -10,28 +12,25 @@ class Serializer {
         })
     }
 
-    async serialize(targetObject: { [key: string]: any }): Promise<Uint8Array | undefined> {
+    async serialize(targetObject: { [key: string]: any }) {
         for (const plugin of this.#PluginArray) {
             if (plugin.filter(targetObject)) {
-                const bRes = plugin.serialize({
+                const bRes = await promiseResult(plugin.serialize({
                     target: targetObject,
                     serializer: this,
-                })
-                let res: Uint8Array | undefined;
-                if (bRes instanceof Promise) {
-                    res = await bRes;
-                } else {
-                    res = bRes;
-                }
-                return res;
+                }))
+                return bRes instanceof Uint8Array
+                    ? bRes
+                    // @ts-ignore
+                    : concatU8iArr(...(bRes.flat(Infinity) as Uint8Array[]))
             }
         }
     }
 
-    async filter(targetObject: any): Promise<Uint8Array | undefined> {
+    async filterPlugin(targetObject: any): Promise<SerializerPluginType<any> | undefined> {
         for (const plugin of this.#PluginArray) {
             if (plugin.filter(targetObject)) {
-                return plugin.targetType;
+                return plugin;
             }
         }
     }

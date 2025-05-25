@@ -1,8 +1,8 @@
 import type Serializer from "../../Serializer";
-import type { SerializerPluginType } from "../../types/serializer";
+import type { SerializerPluginSerializeResultType, SerializerPluginType } from "../../types/serializerPlugin";
 import buildBobjEl from "../../utils/buildBobjEl";
-import concatU8iArr from "../../utils/concatU8iArr";
 import { numberToU8i } from "../../utils/number_u8i_converter";
+import promiseResult from "../../utils/promiseResult";
 
 const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
     {
@@ -15,17 +15,18 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             serializer: Serializer,
         }) {
             const stringEncoder = new TextEncoder();
-            const resultBuffer: Uint8Array[] = []
+            const resultBuffer: SerializerPluginSerializeResultType[] = []
             for (const key in props.target) {
                 const value = props.target[key];
-                const valueType = await props.serializer.filter(value);
+                const plugin = (await props.serializer.filterPlugin(value))!
+                const valueType = plugin.targetType;
                 if (!valueType) {
                     throw new Error("Unknown value type");
                 }
-                const valueBytes = await props.serializer.serialize(value) ?? new Uint8Array(0);
+                const valueBytes = await promiseResult(plugin.serialize({ target: value, serializer: props.serializer })) ?? new Uint8Array(0);
                 resultBuffer.push(buildBobjEl({ key, valueType, value: valueBytes, textEncoder: stringEncoder }));
             }
-            return concatU8iArr(...resultBuffer);
+            return resultBuffer;
         }
     }, {
         filter: (targetObject: any) => {
