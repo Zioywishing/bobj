@@ -1,11 +1,18 @@
 import type { SerializerPluginSerializeResultType } from "../types/serializerPlugin";
 import int2bytes from "./int2bytes";
 
+const calcValueLengthCache = new WeakMap<SerializerPluginSerializeResultType, number>()
+
 const calcValueLength = (target: SerializerPluginSerializeResultType): number => {
     if (target instanceof Uint8Array) {
         return target.length
     } else {
-        return target.reduce((curr, item) => curr + calcValueLength(item), 0)
+        if(calcValueLengthCache.has(target)) {
+            return calcValueLengthCache.get(target)!
+        }
+        const length = target.reduce((curr, item) => curr + calcValueLength(item), 0)
+        calcValueLengthCache.set(target, length)
+        return length
     }
 }
 
