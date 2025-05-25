@@ -21,8 +21,8 @@ export function generateTestObj_deep(deep: number): Object {
     }
 }
 
-export function generateTestObj_length(size: number, repeat: number): Object {
-    return {
-        a: new Array(repeat).fill(0).map(_=>new Uint8Array(size))
+export function generateTestObj_data(data: () => any, deep: number = 0): Object {
+    return deep > 0 ? { _: generateTestObj_data(data, deep - 1) } : {
+        a: data()
     }
 }
