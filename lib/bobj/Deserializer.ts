@@ -43,7 +43,7 @@ class Deserializer {
         return result;
     }
 
-    registerPlugin<T>(plugin: DeserializerPluginType<T>) {
+    registerPlugin(plugin: DeserializerPluginType<any>) {
         if (plugin.filter instanceof Uint8Array) {
             this.#pluginMap.set(u8i2String(plugin.filter), plugin);
             return;

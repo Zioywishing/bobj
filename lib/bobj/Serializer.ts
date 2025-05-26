@@ -1,4 +1,4 @@
-import type { SerializerPluginType, SerializerPluginTypeC, SerializerPluginTypeF } from "./types/serializerPlugin";
+import type { SerializerPluginType } from "./types/serializerPlugin";
 import defaultSerializerPluginGroup from "./plugins/serializer/default";
 import promiseResult from "./utils/promiseResult";
 import concatU8iArr from "./utils/concatU8iArr";
@@ -6,8 +6,8 @@ import calcSerializerPluginSerializeResultLength from "./utils/calcSerializerPlu
 // import iterateUint8Arrays from "./utils/iterateSerializerPluginSerializeResult";
 
 class Serializer {
-    #PluginArray: SerializerPluginTypeF<any>[] = [];
-    #PluginMap: Map<Function | string, SerializerPluginTypeC<any>> = new Map();
+    #PluginArray: SerializerPluginType<any>[] = [];
+    #PluginMap: Map<Function | string, SerializerPluginType<any>> = new Map();
 
     constructor() {
         defaultSerializerPluginGroup.forEach((plugin) => {
@@ -36,26 +36,19 @@ class Serializer {
     }
 
     async filterPlugin(target: any): Promise<SerializerPluginType<any> | undefined> {
-        // console.log({ target, type: typeof target, isO: target instanceof Object, res: target instanceof Object ? this.#PluginMap.has(target.constructor) : this.#PluginMap.has(typeof target) });
         if (target instanceof Object ? this.#PluginMap.has(target.constructor) : this.#PluginMap.has(typeof target)) {
-            // console.log(target);
-            return this.#PluginMap.get(target instanceof Object? target.constructor : typeof target);
+            return this.#PluginMap.get(target instanceof Object ? target.constructor : typeof target);
         }
         for (const plugin of this.#PluginArray) {
-            if (plugin.filter(target)) {
+            if (plugin.filter!(target)) {
                 return plugin;
             }
         }
     }
 
     registerPlugin(plugin: SerializerPluginType<any>) {
-        // @ts-ignore
-        if (plugin.Constructor !== undefined) {
-            // @ts-ignore
-            this.#PluginMap.set(plugin.Constructor, plugin);
-        } else {
-            this.#PluginArray.push(plugin as SerializerPluginTypeF<any>);
-        }
+        plugin.Constructor && this.#PluginMap.set(plugin.Constructor, plugin);
+        plugin.filter && this.#PluginArray.push(plugin);
     }
 }
 
