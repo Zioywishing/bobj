@@ -6,9 +6,10 @@ import promiseResult from "../../utils/promiseResult";
 
 const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
     {
-        filter: (targetObject: any) => {
-            return targetObject instanceof Object
-        },
+        // filter: (targetObject: any) => {
+        //     return targetObject instanceof Object
+        // },
+        Constructor: Object,
         targetType: new Uint8Array([0]),
         async serialize(props: {
             target: { [x: string]: any; },
@@ -29,9 +30,10 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             return resultBuffer;
         }
     }, {
-        filter: (targetObject: any) => {
-            return targetObject instanceof Array;
-        },
+        // filter: (targetObject: any) => {
+        //     return targetObject instanceof Array;
+        // },
+        Constructor: Array,
         targetType: new Uint8Array([1]),
         async serialize(props: { target: any[]; serializer: Serializer; }) {
             const newTarget: { [key: string]: any } = {
@@ -41,42 +43,47 @@ const defaultSerializerPluginGroup: SerializerPluginType<any>[] = [
             return (await props.serializer.serialize(newTarget))!;
         }
     }, {
-        filter: (targetObject: any) => {
-            return targetObject instanceof Uint8Array;
-        },
+        // filter: (targetObject: any) => {
+        //     return targetObject instanceof Uint8Array;
+        // },
+        Constructor: Uint8Array,
         targetType: new Uint8Array([2]),
         serialize(props: { target: Uint8Array; serializer: Serializer; }) {
             return props.target;
         }
     }, {
-        filter(_) {
-            return typeof _ === "string";
-        },
+        // filter(_) {
+        //     return typeof _ === "string";
+        // },
+        Constructor: "string",
         targetType: new Uint8Array([3]),
         serialize(props: { target: string; textEncoder?: TextEncoder; }) {
             const textEncoder = props.textEncoder || new TextEncoder();
             return textEncoder.encode(props.target);
         }
     }, {
-        filter(_) {
-            return typeof _ === "number";
-        },
+        // filter(_) {
+        //     return typeof _ === "number";
+        // },
+        Constructor: "number",
         targetType: new Uint8Array([4]),
         serialize(props: { target: number; }) {
             return numberToU8i(props.target);
         }
     }, {
-        filter(_) {
-            return typeof _ === "boolean";
-        },
+        // filter(_) {
+        //     return typeof _ === "boolean";
+        // },
+        Constructor: "boolean",
         targetType: new Uint8Array([5]),
         serialize(props: { target: boolean; }) {
             return new Uint8Array([props.target ? 1 : 0]);
         }
     }, {
-        filter(_) {
-            return typeof _ === "undefined";
-        },
+        // filter(_) {
+        //     return typeof _ === "undefined";
+        // },
+        Constructor: "undefined",
         targetType: new Uint8Array([6]),
         serialize() {
             return new Uint8Array(0);
