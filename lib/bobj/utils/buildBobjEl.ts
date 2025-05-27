@@ -3,13 +3,12 @@ import calcSerializerPluginSerializeResultLength from "./calcSerializerPluginSer
 import int2bytes from "./int2bytes";
 
 const buildBobjEl = (props: {
-    key: string,
+    keyBytes: Uint8Array,
     valueType: Uint8Array,
     value: SerializerPluginSerializeResultType,
     textEncoder?: TextEncoder,
 }) => {
-    const { key, valueType, value, textEncoder = new TextEncoder() } = props;
-    const keyBytes = textEncoder.encode(key);
+    const { keyBytes, valueType, value } = props;
     const valueLengthBytes = int2bytes(calcSerializerPluginSerializeResultLength(value));
     return [new Uint8Array([
         keyBytes.length,

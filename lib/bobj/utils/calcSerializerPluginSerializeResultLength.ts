@@ -6,7 +6,7 @@ const calcSerializerPluginSerializeResultLength = (target: SerializerPluginSeria
     if (target instanceof Uint8Array) {
         return target.length
     } else {
-        if(calcValueLengthCache.has(target)) {
+        if (calcValueLengthCache.has(target)) {
             return calcValueLengthCache.get(target)!
         }
         const length = target.reduce((curr, item) => curr + calcSerializerPluginSerializeResultLength(item), 0)

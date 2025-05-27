@@ -2,11 +2,9 @@ import type Serializer from "../../Serializer";
 import type { SerializerPluginSerializeResultType, SerializerPluginType } from "../../types/serializerPlugin";
 import calcSerializerPluginSerializeResultLength from "../../utils/calcSerializerPluginSerializeResultLength";
 import int2bytes from "../../utils/int2bytes";
-// import buildBobjEl from "../../utils/buildBobjEl";
 import { numberToU8i } from "../../utils/number_u8i_converter";
-// import promiseResult from "../../utils/promiseResult";
 
-const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () => {
+const useDefaultSyncSerializerPluginGroup: () => SerializerPluginType<any>[] = () => {
     const textEncoder = new TextEncoder();
     const cachedMap = new Map<string | number, Uint8Array>();
 
@@ -32,7 +30,7 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
             // },
             Constructor: Object,
             targetType: new Uint8Array([0]),
-            async serialize(props: {
+            serialize(props: {
                 target: { [x: string]: any; },
                 serializer: Serializer,
             }) {
@@ -44,16 +42,13 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
                     //     keyBytes = textEncoder.encode(key);
                     //     cachedMap.set(key, keyBytes);
                     // }
-                    // const keyBytes = encodeString(key);
                     const value = props.target[key];
                     const plugin = props.serializer.filterPlugin(value)!
                     const valueType = plugin.targetType;
                     if (!valueType) {
                         throw new Error("Unknown value type");
                     }
-                    const vr = plugin.serialize({ target: value, serializer: props.serializer });
-                    const valueBytes = await vr ?? new Uint8Array(0);
-                    // const valueBytes = await promiseResult(plugin.serialize({ target: value, serializer: props.serializer })) ?? new Uint8Array(0);
+                    const valueBytes = plugin.serialize({ target: value, serializer: props.serializer }) as SerializerPluginSerializeResultType ?? new Uint8Array(0);
                     resultBuffer.push(buildBobjEl({ keyBytes, valueType, value: valueBytes, textEncoder }));
                 }
                 return resultBuffer;
@@ -64,12 +59,12 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
             // },
             Constructor: Array,
             targetType: new Uint8Array([1]),
-            async serialize(props: { target: any[]; serializer: Serializer; }) {
+            serialize(props: { target: any[]; serializer: Serializer; }) {
                 const newTarget: { [key: string]: any } = {
                     ...props.target,
                     l: props.target.length,
                 }
-                return (await props.serializer.serialize(newTarget))!;
+                return (props.serializer.filterPlugin(newTarget)!.serialize({ target: newTarget, serializer: props.serializer }))!;
             }
         }, {
             // filter: (targetObject: any) => {
@@ -128,4 +123,4 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
     ]
 }
 
-export default useDefaultSerializerPluginGroup;
+export default useDefaultSyncSerializerPluginGroup;
