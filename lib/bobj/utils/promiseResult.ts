@@ -1,1 +1,0 @@
-export default async <T>(_: T | Promise<T>) => _ instanceof Promise ? await _ : _

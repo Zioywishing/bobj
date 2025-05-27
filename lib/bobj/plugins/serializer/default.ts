@@ -3,7 +3,7 @@ import type { SerializerPluginSerializeResultType, SerializerPluginType } from "
 import calcSerializerPluginSerializeResultLength from "../../utils/calcSerializerPluginSerializeResultLength";
 import int2bytes from "../../utils/int2bytes";
 // import buildBobjEl from "../../utils/buildBobjEl";
-import { numberToU8i } from "../../utils/number_u8i_converter";
+import useDefaultSerializerPluginGroupBase from "./default_base";
 // import promiseResult from "../../utils/promiseResult";
 
 const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () => {
@@ -27,9 +27,6 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
     }
     return [
         {
-            // filter: (targetObject: any) => {
-            //     return targetObject instanceof Object
-            // },
             Constructor: Object,
             targetType: new Uint8Array([0]),
             async serialize(props: {
@@ -39,12 +36,6 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
                 const resultBuffer: SerializerPluginSerializeResultType[] = []
                 for (const key in props.target) {
                     const keyBytes = textEncoder.encode(key);
-                    // let keyBytes = cachedMap.get(key);
-                    // if (!keyBytes) {
-                    //     keyBytes = textEncoder.encode(key);
-                    //     cachedMap.set(key, keyBytes);
-                    // }
-                    // const keyBytes = encodeString(key);
                     const value = props.target[key];
                     const plugin = props.serializer.filterPlugin(value)!
                     const valueType = plugin.targetType;
@@ -53,15 +44,11 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
                     }
                     const vr = plugin.serialize({ target: value, serializer: props.serializer });
                     const valueBytes = await vr ?? new Uint8Array(0);
-                    // const valueBytes = await promiseResult(plugin.serialize({ target: value, serializer: props.serializer })) ?? new Uint8Array(0);
                     resultBuffer.push(buildBobjEl({ keyBytes, valueType, value: valueBytes, textEncoder }));
                 }
                 return resultBuffer;
             }
         }, {
-            // filter: (targetObject: any) => {
-            //     return targetObject instanceof Array;
-            // },
             Constructor: Array,
             targetType: new Uint8Array([1]),
             async serialize(props: { target: any[]; serializer: Serializer; }) {
@@ -72,59 +59,13 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
                 return (await props.serializer.serialize(newTarget))!;
             }
         }, {
-            // filter: (targetObject: any) => {
-            //     return targetObject instanceof Uint8Array;
-            // },
-            Constructor: Uint8Array,
-            targetType: new Uint8Array([2]),
-            serialize(props: { target: Uint8Array; serializer: Serializer; }) {
-                return props.target;
-            }
-        }, {
-            // filter(_) {
-            //     return typeof _ === "string";
-            // },
             Constructor: "string",
             targetType: new Uint8Array([3]),
             serialize(props: { target: string }) {
                 return textEncoder.encode(props.target);
             }
-        }, {
-            // filter(_) {
-            //     return typeof _ === "number";
-            // },
-            Constructor: "number",
-            targetType: new Uint8Array([4]),
-            serialize(props: { target: number; }) {
-                return numberToU8i(props.target);
-            }
-        }, {
-            // filter(_) {
-            //     return typeof _ === "boolean";
-            // },
-            Constructor: "boolean",
-            targetType: new Uint8Array([5]),
-            serialize(props: { target: boolean; }) {
-                return new Uint8Array([props.target ? 1 : 0]);
-            }
-        }, {
-            // filter(_) {
-            //     return typeof _ === "undefined";
-            // },
-            Constructor: "undefined",
-            targetType: new Uint8Array([6]),
-            serialize() {
-                return new Uint8Array(0);
-            }
-        }, {
-            filter(_) {
-                return _ === null;
-            },
-            targetType: new Uint8Array([7]),
-            serialize() {
-                return new Uint8Array(0);
-            }
-        }
+        },
+        ...useDefaultSerializerPluginGroupBase(),
     ]
 }
 

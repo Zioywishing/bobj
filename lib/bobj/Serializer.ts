@@ -1,6 +1,5 @@
 import type { SerializerPluginSerializeResultType, SerializerPluginType } from "./types/serializerPlugin";
 // import useDefaultSerializerPluginGroup from "./plugins/serializer/default";
-import promiseResult from "./utils/promiseResult";
 import { concatU8iArrSync } from "./utils/concatU8iArr";
 import calcSerializerPluginSerializeResultLength from "./utils/calcSerializerPluginSerializeResultLength";
 import useDefaultSyncSerializerPluginGroup from "./plugins/serializer/default_sync";
@@ -49,10 +48,11 @@ class Serializer {
                     throw new Error("Unknown value type");
                 }
 
-                const bRes = await promiseResult(plugin.serialize({
+                const bResP = plugin.serialize({
                     target: targetObject,
                     serializer: this,
-                }))
+                })
+                const bRes = bResP instanceof Promise ? await bResP : bResP;
 
                 const res = bRes instanceof Uint8Array
                     ? bRes
@@ -67,7 +67,7 @@ class Serializer {
     }
 
     filterPlugin(target: any): SerializerPluginType<any> | undefined {
-        if (target instanceof Object ? this.#PluginMap.has(target.constructor) : this.#PluginMap.has(typeof target)) {
+        if (this.#PluginMap.has(target instanceof Object ? target.constructor : typeof target)) {
             return this.#PluginMap.get(target instanceof Object ? target.constructor : typeof target);
         }
         for (const plugin of this.#PluginArray) {

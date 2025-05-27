@@ -3,11 +3,11 @@ import type { DeserializerPluginType } from "../../types/deserializerPlugin";
 import decodeBobjItem from "../../utils/decodeBobjItem";
 import useDefaultBaseDeserializerPluginGroup from "./default_base";
 
-const useDefaultDeserializerPluginGroup: () => DeserializerPluginType<any>[] = () => {
+const useDefaultSyncDeserializerPluginGroup: () => DeserializerPluginType<any>[] = () => {
 
     const textDecoder = new TextDecoder();
 
-    const desObj = async (props: {
+    const desObj = (props: {
         targetArray: Uint8Array;
         deserializer: Deserializer;
     }) => {
@@ -19,7 +19,7 @@ const useDefaultDeserializerPluginGroup: () => DeserializerPluginType<any>[] = (
             const plugin = props.deserializer.filterPlugin(bobjItem.valueType);
             if (plugin) {
                 const valueObj = plugin.deserialize({ targetArray: bobjItem.value, deserializer: props.deserializer });
-                result[bobjItem.key] = valueObj instanceof Promise ? await valueObj : valueObj;
+                result[bobjItem.key] = valueObj;
             } else {
                 throw new Error("not found deserializer plugin")
             }
@@ -36,8 +36,8 @@ const useDefaultDeserializerPluginGroup: () => DeserializerPluginType<any>[] = (
         {
             // array 
             filter: new Uint8Array([1]),
-            deserialize: async (props) => {
-                const values = (await desObj(props))!;
+            deserialize: (props) => {
+                const values = desObj(props)!;
                 const result = new Array(values.l).fill(0);
                 for (let i = 0; i < values.l; i++) {
                     result[i] = values[i];
@@ -55,4 +55,4 @@ const useDefaultDeserializerPluginGroup: () => DeserializerPluginType<any>[] = (
     ]
 };
 
-export default useDefaultDeserializerPluginGroup;
+export default useDefaultSyncDeserializerPluginGroup;

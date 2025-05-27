@@ -141,36 +141,56 @@ const restoredDate = await deserializer.deserialize(dateBinary); // { date: Date
 All tests were run 1000 times per case on bun, measuring average serialization/deserialization time (ms) and resulting data size (bytes).  
 For large `Uint8Array` objects, JSON and BSON are skipped due to their limitations.
 
-| Case                                             | Method   | Serialize (ms) | Deserialize (ms)         | Data Size (bytes) |
-|--------------------------------------------------|----------|----------------|--------------------------|-------------------|
-| **Normal Object**                                | bobj     | 0.0295         | 0.0138 / 0.0147          | 125               |
-|                                                  | JSON     | 0.0012         | 0.0006                   | 73                |
-|                                                  | BSON     | 0.0037         | 0.0036                   | 93                |
-|                                                  | msgpack  | 0.0054         | 0.0027                   | 46                |
-| **Large Uint8Array (10MB)**                      | bobj     | 1.8926         | 1.6989 / 0.0011          | 10,485,771        |
-|                                                  | JSON     | N/A            | N/A                      | N/A               |
-|                                                  | BSON     | 2.3638         | 0.0011                   | 10,485,776        |
-|                                                  | msgpack  | 3.9238         | 1.7154                   | 10,485,772        |
-| **Large Uint8Array (100MB)**                     | bobj     | 18.5402        | 14.7334 / 0.0011         | 104,857,612       |
-|                                                  | JSON     | N/A            | N/A                      | N/A               |
-|                                                  | BSON     | N/A            | N/A                      | N/A               |
-|                                                  | msgpack  | 34.7290        | 14.8719                  | 104,857,612       |
-| **Deep Nested (depth=10, 10MB at last level)**   | bobj     | 1.6478         | 1.5394 / 0.0107          | 10,485,851        |
-|                                                  | JSON     | N/A            | N/A                      | N/A               |
-|                                                  | BSON     | 2.1661         | 0.0011                   | 10,485,856        |
-|                                                  | msgpack  | 3.4390         | 1.5801                   | 10,485,802        |
-| **Deep Nested (depth=10, string at last level)** | bobj     | 1.7462         | 0.7324 / 0.6786          | 6,972             |
-|                                                  | JSON     | 0.3437         | 0.0468                   | 6,015             |
-|                                                  | BSON     | 0.3081         | 0.0519                   | 8,020             |
-|                                                  | msgpack  | 0.2413         | 0.2104                   | 3,011             |
-| **Deep Nested (depth=1000, 10MB at last level)** | bobj     | 3.4159         | 2.7660 / 0.6914          | 10,493,771        |
-|                                                  | JSON     | N/A            | N/A                      | N/A               |
-|                                                  | BSON     | N/A            | N/A                      | N/A               |
-|                                                  | msgpack  | 3.9334         | 1.8556                   | 10,488,772        |
-| **Deep Nested (depth=1000, string at last level)**| bobj    | 1.5537         | 0.6884 / 0.6880          | 6,972             |
-|                                                  | JSON     | 0.3886         | 0.0456                   | 6,015             |
-|                                                  | BSON     | 0.2634         | 0.0418                   | 8,020             |
-|                                                  | msgpack  | 0.2428         | 0.1812                   | 3,011             |
+| Case                                             | Method                | Serialize (ms) | Deserialize (ms) | Data Size (bytes) |
+|--------------------------------------------------|----------------------|----------------|------------------|-------------------|
+| **Normal Object**                                | bobj                 | 0.0240         | 0.0168           | 125               |
+|                                                  | bobj (sync)          | 0.0152         | 0.0154           | 125               |
+|                                                  | bobj (fastU8iArr)    | N/A            | 0.0121           | N/A               |
+|                                                  | JSON                 | 0.0011         | 0.0004           | 73                |
+|                                                  | BSON                 | 0.0044         | 0.0038           | 93                |
+|                                                  | msgpack              | 0.0045         | 0.0030           | 46                |
+| **Object with 1000 keys**                        | bobj                 | 1.6406         | 1.1971           | 15890             |
+|                                                  | bobj (sync)          | 1.6498         | 1.2041           | 15890             |
+|                                                  | bobj (fastU8iArr)    | N/A            | 1.2003           | N/A               |
+|                                                  | JSON                 | 0.1188         | 0.0569           | 9781              |
+|                                                  | BSON                 | 0.1886         | 0.1586           | 8895              |
+|                                                  | msgpack              | 0.1623         | 0.1867           | 6509              |
+| **Large Uint8Array (10MB)**                      | bobj                 | 1.7151         | 1.4187           | 10,485,771        |
+|                                                  | bobj (sync)          | 1.6250         | 1.4469           | 10,485,771        |
+|                                                  | bobj (fastU8iArr)    | N/A            | 0.0012           | N/A               |
+|                                                  | JSON                 | N/A            | N/A              | N/A               |
+|                                                  | BSON                 | 2.1513         | 0.0013           | 10,485,776        |
+|                                                  | msgpack              | 3.4741         | 1.4098           | 10,485,772        |
+| **Large Uint8Array (100MB)**                     | bobj                 | 18.8989        | 15.2495          | 104,857,612       |
+|                                                  | bobj (sync)          | 17.8462        | 15.1305          | 104,857,612       |
+|                                                  | bobj (fastU8iArr)    | N/A            | 0.0012           | N/A               |
+|                                                  | JSON                 | N/A            | N/A              | N/A               |
+|                                                  | BSON                 | N/A            | N/A              | N/A               |
+|                                                  | msgpack              | 35.0774        | 15.1874          | 104,857,612       |
+| **Deep Nested (depth=10, string at last level)** | bobj                 | 1.2739         | 0.7761           | 6,972             |
+|                                                  | bobj (sync)          | 0.9884         | 0.5930           | 6,972             |
+|                                                  | bobj (fastU8iArr)    | N/A            | 0.5478           | N/A               |
+|                                                  | JSON                 | 0.3507         | 0.0460           | 6,015             |
+|                                                  | BSON                 | 0.2978         | 0.0663           | 8,020             |
+|                                                  | msgpack              | 0.2612         | 0.2267           | 3,011             |
+| **Deep Nested (depth=10, 10MB at last level)**   | bobj                 | 1.5191         | 1.6598           | 10,485,851        |
+|                                                  | bobj (sync)          | 1.8928         | 1.5833           | 10,485,851        |
+|                                                  | bobj (fastU8iArr)    | N/A            | 0.0065           | N/A               |
+|                                                  | JSON                 | N/A            | N/A              | N/A               |
+|                                                  | BSON                 | 2.1945         | 0.0012           | 10,485,856        |
+|                                                  | msgpack              | 3.3996         | 1.4840           | 10,485,802        |
+| **Deep Nested (depth=1000, string at last level)**| bobj                | 1.0393         | 0.7277           | 6,972             |
+|                                                  | bobj (sync)          | 0.9754         | 0.5520           | 6,972             |
+|                                                  | bobj (fastU8iArr)    | N/A            | 0.5602           | N/A               |
+|                                                  | JSON                 | 0.3607         | 0.0470           | 6,015             |
+|                                                  | BSON                 | 0.2759         | 0.0417           | 8,020             |
+|                                                  | msgpack              | 0.2568         | 0.1952           | 3,011             |
+| **Deep Nested (depth=1000, 10MB at last level)** | bobj                 | 3.3488         | 3.0316           | 10,493,771        |
+|                                                  | bobj (sync)          | 3.2013         | 2.8082           | 10,493,771        |
+|                                                  | bobj (fastU8iArr)    | N/A            | 0.5609           | N/A               |
+|                                                  | JSON                 | N/A            | N/A              | N/A               |
+|                                                  | BSON                 | N/A            | N/A              | N/A               |
+|                                                  | msgpack              | 3.9857         | 1.7409           | 10,488,772        |
 
 **Notes:**
 - "N/A" means the method is not applicable due to format limitations (e.g., JSON cannot handle `Uint8Array`, BSON has a 16MB document size limit).
