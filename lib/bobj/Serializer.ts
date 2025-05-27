@@ -4,6 +4,7 @@ import promiseResult from "./utils/promiseResult";
 import { concatU8iArrSync } from "./utils/concatU8iArr";
 import calcSerializerPluginSerializeResultLength from "./utils/calcSerializerPluginSerializeResultLength";
 import useDefaultSyncSerializerPluginGroup from "./plugins/serializer/default_sync";
+import useDefaultSerializerPluginGroup from "./plugins/serializer/default";
 
 class Serializer {
     #PluginArray: SerializerPluginType<any>[] = [];
@@ -39,7 +40,7 @@ class Serializer {
                 return res;
             }
         } else {
-            useDefaultSyncSerializerPluginGroup().forEach((plugin) => {
+            useDefaultSerializerPluginGroup().forEach((plugin) => {
                 this.registerPlugin(plugin);
             })
             this.serialize = async (targetObject: { [key: string]: any }) => {
