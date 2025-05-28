@@ -8,7 +8,7 @@ import useDefaultSerializerPluginGroupBase from "./default_base";
 
 const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () => {
     const textEncoder = new TextEncoder();
-    const cachedMap = new Map<string | number, Uint8Array>();
+    // const cachedMap = new Map<string | number, Uint8Array>();
 
     const buildBobjEl = (props: {
         keyBytes: Uint8Array,
@@ -18,12 +18,13 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
     }) => {
         const { keyBytes, valueType, value } = props;
         const valueLengthBytes = int2bytes(calcSerializerPluginSerializeResultLength(value));
-        let u1 = cachedMap.get(keyBytes.length << 16 + valueType.length << 8 + valueLengthBytes.length);
-        if (!u1) {
-            u1 = new Uint8Array([keyBytes.length, valueType.length, valueLengthBytes.length]);
-            cachedMap.set(keyBytes.length << 16 + valueType.length << 8 + valueLengthBytes.length, u1);
-        }
-        return [u1, keyBytes, valueType, valueLengthBytes, value]
+        // let u1 = cachedMap.get(keyBytes.length << 24 + valueType.length << 16 + valueLengthBytes.length);
+        // if (!u1) {
+        // u1 = new Uint8Array([keyBytes.length, valueType.length, valueLengthBytes.length]);
+        //     cachedMap.set(keyBytes.length << 24 + valueType.length << 16 + valueLengthBytes.length, u1);
+        // }
+        // return [u1, keyBytes, valueType, valueLengthBytes, value]
+        return [new Uint8Array([keyBytes.length, valueType.length, valueLengthBytes.length]), keyBytes, valueType, valueLengthBytes, value]
     }
     return [
         {

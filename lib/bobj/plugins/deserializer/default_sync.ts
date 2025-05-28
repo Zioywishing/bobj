@@ -21,6 +21,7 @@ const useDefaultSyncDeserializerPluginGroup: () => DeserializerPluginType<any>[]
                 const valueObj = plugin.deserialize({ targetArray: bobjItem.value, deserializer: props.deserializer });
                 result[bobjItem.key] = valueObj;
             } else {
+                console.error("not found deserializer plugin", bobjItem.valueType);
                 throw new Error("not found deserializer plugin")
             }
             p += bobjItem.totalLength;
