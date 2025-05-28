@@ -44,7 +44,6 @@ const useDefaultSyncSerializerPluginGroup: () => SerializerPluginType<any>[] = (
                     const valueBytes = plugin.serialize({ target: value, serializer: props.serializer }) as SerializerPluginSerializeResultType ?? new Uint8Array(0);
                     resultBuffer.push(buildBobjEl({ keyBytes, valueType, value: valueBytes, textEncoder }));
                 }
-                console.log(resultBuffer)
                 return resultBuffer;
             }
         }, {
