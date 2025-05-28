@@ -79,7 +79,7 @@ class Serializer {
 
     registerPlugin(plugin: SerializerPluginType<any>) {
         plugin.Constructor && this.#PluginMap.set(plugin.Constructor, plugin);
-        plugin.filter && this.#PluginArray.push(plugin);
+        plugin.filter && this.#PluginArray.unshift(plugin);
     }
 }
 
