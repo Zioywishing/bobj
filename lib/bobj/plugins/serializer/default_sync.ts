@@ -50,10 +50,9 @@ const useDefaultSyncSerializerPluginGroup: () => SerializerPluginType<any>[] = (
             Constructor: Array,
             targetType: new Uint8Array([1]),
             serialize(props: { target: any[]; serializer: Serializer; }) {
-                const targetLengthBytes = int2bytes(props.target.length);
-                const resultBuffer: SerializerPluginSerializeResultType[] = [targetLengthBytes];
+                const arrLenBytes = int2bytes(props.target.length);
+                const resultBuffer: SerializerPluginSerializeResultType[] = [new Uint8Array([arrLenBytes.length]), arrLenBytes];
                 for (const item of props.target) {
-                    const itemResult: SerializerPluginSerializeResultType[] = []
                     const plugin = props.serializer.filterPlugin(item)!
                     const valueType = plugin.targetType;
                     if (!valueType) {
@@ -61,7 +60,10 @@ const useDefaultSyncSerializerPluginGroup: () => SerializerPluginType<any>[] = (
                     }
                     const value = (plugin.serialize({ target: item, serializer: props.serializer }) as SerializerPluginSerializeResultType | undefined) ?? new Uint8Array(0);
                     const valueLengthBytes = int2bytes(calcSerializerPluginSerializeResultLength(value));
-                    itemResult.push(new Uint8Array([valueType.length, valueLengthBytes.length]), valueType, valueLengthBytes, value);
+                    const itemPayload: SerializerPluginSerializeResultType[] = [new Uint8Array([valueType.length, valueLengthBytes.length]), valueType, valueLengthBytes, value];
+                    const itemPayloadLength = calcSerializerPluginSerializeResultLength(itemPayload);
+                    const itemLenBytes = int2bytes(itemPayloadLength);
+                    resultBuffer.push(new Uint8Array([itemLenBytes.length]), itemLenBytes, itemPayload);
                 }
                 return resultBuffer;
             }
