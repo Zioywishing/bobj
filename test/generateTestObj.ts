@@ -16,7 +16,7 @@ export function generateTestObj_deep(deep: number): Object {
             e: undefined,
             f: generateTestObj_deep(deep - 1),
         }],
-        g: new Uint8Array(3).fill(1),
+        g: new Uint8Array([1, 2, 3, 4, 5]),
         h: generateTestObj_deep(deep - 1),
     }
 }
@@ -26,3 +26,5 @@ export function generateTestObj_data(data: () => any, deep: number = 0): Object 
         a: data()
     }
 }
+
+export const genBigObj = (size: number) => new Array(size).fill(0).reduce((acc, _, i) => ({ ...acc, [i]: i }), {})
