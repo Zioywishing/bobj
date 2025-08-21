@@ -45,8 +45,7 @@ const useDefaultSyncDeserializerPluginGroup: () => DeserializerPluginType<any>[]
                 const arrLen = bytes2int(arr.subarray(p, p + arrLenLen)); p += arrLenLen;
                 const result = new Array(arrLen);
                 for (let i = 0; i < arrLen; i++) {
-                    const itemLenLen = arr[p]; p += 1;
-                    const itemLen = bytes2int(arr.subarray(p, p + itemLenLen)); p += itemLenLen;
+                    const itemLenLen = arr[p]; p += 1 + itemLenLen;
                     const valueTypeLen = arr[p]; p += 1;
                     const valueLenLen = arr[p]; p += 1;
                     const valueType = arr.subarray(p, p + valueTypeLen); p += valueTypeLen;
