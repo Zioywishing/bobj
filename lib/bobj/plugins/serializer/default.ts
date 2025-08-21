@@ -52,12 +52,24 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
         }, {
             Constructor: Array,
             targetType: new Uint8Array([1]),
+            /**
+             * | itemByteLength-Length | itemByteLength | Value type length | Value length length | Value type  | Value length  | Value data |  
+             */
             async serialize(props: { target: any[]; serializer: Serializer; }) {
-                const newTarget: { [key: string]: any } = {
-                    ...props.target,
-                    l: props.target.length,
+                const targetLengthBytes = int2bytes(props.target.length);
+                const resultBuffer: SerializerPluginSerializeResultType[] = [targetLengthBytes];
+                for (const item of props.target) {
+                    const itemResult: SerializerPluginSerializeResultType[] = []
+                    const plugin = props.serializer.filterPlugin(item)!
+                    const valueType = plugin.targetType;
+                    if (!valueType) {
+                        throw new Error("Unknown value type");
+                    }
+                    const value = await plugin.serialize({ target: item, serializer: props.serializer }) ?? new Uint8Array(0);
+                    const valueLengthBytes = int2bytes(calcSerializerPluginSerializeResultLength(value));
+                    itemResult.push(new Uint8Array([valueType.length, valueLengthBytes.length]), valueType, valueLengthBytes, value);
                 }
-                return (await props.serializer.serialize(newTarget))!;
+                return resultBuffer;
             }
         }, {
             Constructor: "string",

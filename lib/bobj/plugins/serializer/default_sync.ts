@@ -50,11 +50,20 @@ const useDefaultSyncSerializerPluginGroup: () => SerializerPluginType<any>[] = (
             Constructor: Array,
             targetType: new Uint8Array([1]),
             serialize(props: { target: any[]; serializer: Serializer; }) {
-                const newTarget: { [key: string]: any } = {
-                    ...props.target,
-                    l: props.target.length,
+                const targetLengthBytes = int2bytes(props.target.length);
+                const resultBuffer: SerializerPluginSerializeResultType[] = [targetLengthBytes];
+                for (const item of props.target) {
+                    const itemResult: SerializerPluginSerializeResultType[] = []
+                    const plugin = props.serializer.filterPlugin(item)!
+                    const valueType = plugin.targetType;
+                    if (!valueType) {
+                        throw new Error("Unknown value type");
+                    }
+                    const value = (plugin.serialize({ target: item, serializer: props.serializer }) as SerializerPluginSerializeResultType | undefined) ?? new Uint8Array(0);
+                    const valueLengthBytes = int2bytes(calcSerializerPluginSerializeResultLength(value));
+                    itemResult.push(new Uint8Array([valueType.length, valueLengthBytes.length]), valueType, valueLengthBytes, value);
                 }
-                return (props.serializer.filterPlugin(newTarget)!.serialize({ target: newTarget, serializer: props.serializer }))!;
+                return resultBuffer;
             }
         }, {
             Constructor: "string",
