@@ -1,6 +1,6 @@
 {
   "name": "bobj",
-  "version": "1.4.4",
+  "version": "2.0.0",
   "type": "module",
   "main": "dist/bobj.umd.cjs",
   "module": "dist/bobj.js",

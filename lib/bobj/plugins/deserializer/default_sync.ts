@@ -1,6 +1,7 @@
 import type Deserializer from "../../Deserializer";
 import type { DeserializerPluginType } from "../../types/deserializerPlugin";
 import decodeBobjItem from "../../utils/decodeBobjItem";
+import bytes2int from "../../utils/bytes2int";
 import useDefaultBaseDeserializerPluginGroup from "./default_base";
 
 const useDefaultSyncDeserializerPluginGroup: () => DeserializerPluginType<any>[] = () => {
@@ -38,10 +39,25 @@ const useDefaultSyncDeserializerPluginGroup: () => DeserializerPluginType<any>[]
             // array 
             filter: new Uint8Array([1]),
             deserialize: (props) => {
-                const values = desObj(props)!;
-                const result = new Array(values.l).fill(0);
-                for (let i = 0; i < values.l; i++) {
-                    result[i] = values[i];
+                const arr = props.targetArray;
+                let p = 0;
+                const arrLenLen = arr[p]; p += 1;
+                const arrLen = bytes2int(arr.subarray(p, p + arrLenLen)); p += arrLenLen;
+                const result = new Array(arrLen);
+                for (let i = 0; i < arrLen; i++) {
+                    const itemLenLen = arr[p]; p += 1;
+                    const itemLen = bytes2int(arr.subarray(p, p + itemLenLen)); p += itemLenLen;
+                    const valueTypeLen = arr[p]; p += 1;
+                    const valueLenLen = arr[p]; p += 1;
+                    const valueType = arr.subarray(p, p + valueTypeLen); p += valueTypeLen;
+                    const valueLen = bytes2int(arr.subarray(p, p + valueLenLen)); p += valueLenLen;
+                    const valueBytes = arr.subarray(p, p + valueLen); p += valueLen;
+                    const plugin = props.deserializer.filterPlugin(valueType);
+                    if (!plugin) {
+                        throw new Error("not found deserializer plugin");
+                    }
+                    const valueObj = plugin.deserialize({ targetArray: valueBytes, deserializer: props.deserializer });
+                    result[i] = valueObj;
                 }
                 return result;
             }

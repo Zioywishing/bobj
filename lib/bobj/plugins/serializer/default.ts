@@ -52,12 +52,36 @@ const useDefaultSerializerPluginGroup: () => SerializerPluginType<any>[] = () =>
         }, {
             Constructor: Array,
             targetType: new Uint8Array([1]),
+            /**
+             * Array encoding:
+             * - 1 byte: ArrayLengthByteLength
+             * - N bytes: ArrayLength
+             * Then for each item:
+             * - 1 byte: ItemByteLengthByteLength
+             * - M bytes: ItemByteLength
+             * - 1 byte: ValueTypeLength
+             * - 1 byte: ValueLengthByteLength
+             * - ValueType bytes
+             * - ValueLength bytes
+             * - Value bytes
+             */
             async serialize(props: { target: any[]; serializer: Serializer; }) {
-                const newTarget: { [key: string]: any } = {
-                    ...props.target,
-                    l: props.target.length,
+                const arrLenBytes = int2bytes(props.target.length);
+                const resultBuffer: SerializerPluginSerializeResultType[] = [new Uint8Array([arrLenBytes.length]), arrLenBytes];
+                for (const item of props.target) {
+                    const plugin = props.serializer.filterPlugin(item)!
+                    const valueType = plugin.targetType;
+                    if (!valueType) {
+                        throw new Error("Unknown value type");
+                    }
+                    const value = await plugin.serialize({ target: item, serializer: props.serializer }) ?? new Uint8Array(0);
+                    const valueLengthBytes = int2bytes(calcSerializerPluginSerializeResultLength(value));
+                    const itemPayload: SerializerPluginSerializeResultType[] = [new Uint8Array([valueType.length, valueLengthBytes.length]), valueType, valueLengthBytes, value];
+                    const itemPayloadLength = calcSerializerPluginSerializeResultLength(itemPayload);
+                    const itemLenBytes = int2bytes(itemPayloadLength);
+                    resultBuffer.push(new Uint8Array([itemLenBytes.length]), itemLenBytes, itemPayload);
                 }
-                return (await props.serializer.serialize(newTarget))!;
+                return resultBuffer;
             }
         }, {
             Constructor: "string",

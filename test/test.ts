@@ -64,12 +64,12 @@ export default async function test() {
 
     // deserializer.registerPlugin(fastU8iArr)
 
-    const testType: number = 4
+    const testType: number = 1
 
     const obj = (() => {
         switch (testType) {
             case (1): {
-                return generateTestObj_deep(12)
+                return generateTestObj_deep(3)
             }
             case (2): {
                 return generateTestObj_data(() => new Uint8Array([1, 2, 3, 4]), 0)
